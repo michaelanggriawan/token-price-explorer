@@ -1,103 +1,162 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { useState, useEffect } from 'react';
+import TokenInputCard from '@/components/TokenInputCard';
+import TokenSelectModal from '@/components/TokenSelectModal';
+import SwapIcon from '@/components/SwapIcon';
+import type { SelectedToken, Token } from '@/types';
+import { getAssetErc20ByChainAndSymbol, getAssetPriceInfo } from '@funkit/api-base';
+import evmChains from '@/data/evm_chains.json';
+import { defaultToken } from '@/constant';
+
+export default function Page() {
+  const [fromAmount, setFromAmount] = useState('0');
+  const [toAmount, setToAmount] = useState('0');
+  const [showTokenModal, setShowTokenModal] = useState(false);
+  const [isSelectingFrom, setIsSelectingFrom] = useState(true);
+  const [fromToken, setFromToken] = useState<SelectedToken>(defaultToken);
+  const [toToken, setToToken] = useState<SelectedToken>(defaultToken);
+  const [tokens, setTokens] = useState<Token[]>([]);
+  const [lastEdited, setLastEdited] = useState<'from' | 'to'>('from');
+
+  useEffect(() => {
+    setTokens(evmChains);
+  }, []);
+
+  useEffect(() => {
+    if (!fromToken.tokenPrice || !toToken.tokenPrice) return;
+
+    const fromUnit = fromToken.tokenPrice.unitPrice;
+    const toUnit = toToken.tokenPrice.unitPrice;
+    const rate = fromUnit / toUnit;
+
+    const fromDecimals = fromToken.decimals ?? 8;
+    const toDecimals = toToken.decimals ?? 8;
+
+    const formatValue = (val: number, decimals: number) =>
+      val.toLocaleString('en-US', {
+        maximumFractionDigits: decimals,
+        minimumFractionDigits: 0,
+        useGrouping: false,
+      });
+
+    if (lastEdited === 'from') {
+      const value = parseFloat(fromAmount);
+      if (!isNaN(value)) {
+        const result = value === 0 ? '0' : formatValue(value * rate, toDecimals);
+        setToAmount(result);
+      }
+    } else {
+      const value = parseFloat(toAmount);
+      if (!isNaN(value)) {
+        const result = value === 0 ? '0' : formatValue(value / rate, fromDecimals);
+        setFromAmount(result);
+      }
+    }
+  }, [fromAmount, toAmount, fromToken, toToken, lastEdited]);
+
+  const handleTokenClick = (isFrom: boolean) => {
+    setIsSelectingFrom(isFrom);
+    setShowTokenModal(true);
+  };
+
+  const handleSelectToken = async (token: Token & { selectedTokenSymbol: string }) => {
+    try {
+      const tokenInfo = await getAssetErc20ByChainAndSymbol({
+        chainId: token.chainId.toString(),
+        symbol: token.selectedTokenSymbol,
+        apiKey: 'Z9SZaOwpmE40KX61mUKWm5hrpGh7WHVkaTvQJpQk',
+      });
+
+      const tokenPrice = await getAssetPriceInfo({
+        chainId: token.chainId.toString(),
+        assetTokenAddress: tokenInfo.address,
+        apiKey: 'Z9SZaOwpmE40KX61mUKWm5hrpGh7WHVkaTvQJpQk',
+      });
+
+      const enrichedToken: SelectedToken = {
+        chain: token.chainId.toString(),
+        name: token.name,
+        symbol: token.selectedTokenSymbol,
+        address: tokenInfo.address,
+        decimals: tokenInfo.decimals,
+        tokenPrice,
+      };
+
+      if (isSelectingFrom) {
+        setFromToken(enrichedToken);
+      } else {
+        setToToken(enrichedToken);
+      }
+
+      setShowTokenModal(false);
+    } catch (err) {
+      console.error('Failed to fetch token info:', err);
+      throw err;
+    }
+  };
+
+  const handleSwap = () => {
+    const tempAmount = fromAmount;
+    const tempToken = fromToken;
+
+    setFromAmount(toAmount);
+    setToAmount(tempAmount);
+    setFromToken(toToken);
+    setToToken(tempToken);
+    setLastEdited('from');
+  };
+
+  const parseUSD = (amount: string, unitPrice: number | undefined) => {
+    const parsed = parseFloat(amount);
+    if (isNaN(parsed) || !unitPrice) return 0;
+    return parsed * unitPrice;
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
+    <main className="min-h-screen bg-gray-100 p-6 flex items-center justify-center">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-4">
+        <TokenInputCard
+          label="FROM"
+          amount={fromAmount}
+          onAmountChange={(val) => {
+            setFromAmount(val === '' ? '0' : val);
+            setLastEdited('from');
+          }}
+          selectedToken={fromToken}
+          onTokenClick={() => handleTokenClick(true)}
+          estimatedUSD={parseUSD(fromAmount, fromToken.tokenPrice?.unitPrice)}
         />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+        <div className="flex justify-center my-4">
+          <button
+            onClick={handleSwap}
+            className="bg-white border p-2 rounded-full shadow hover:bg-gray-50"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <SwapIcon />
+          </button>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+
+        <TokenInputCard
+          label="TO"
+          amount={toAmount}
+          onAmountChange={(val) => {
+            setToAmount(val === '' ? '0' : val);
+            setLastEdited('to');
+          }}
+          selectedToken={toToken}
+          onTokenClick={() => handleTokenClick(false)}
+          estimatedUSD={parseUSD(toAmount, toToken.tokenPrice?.unitPrice)}
+        />
+      </div>
+
+      {showTokenModal && (
+        <TokenSelectModal
+          tokens={tokens}
+          onSelect={handleSelectToken}
+          onClose={() => setShowTokenModal(false)}
+        />
+      )}
+    </main>
   );
 }

@@ -1,0 +1,72 @@
+[
+  {
+    "name": "Ethereum Mainnet",
+    "chainId": 1,
+    "nativeCurrency": {
+      "name": "Ether",
+      "symbol": "ETH",
+      "decimals": 18
+    },
+    "rpc": [
+      "https://eth.llamarpc.com"
+    ],
+    "explorer": "https://etherscan.io",
+    "supportedTokens": ["USDC", "USDT", "DAI", "WBTC", "UNI", "LINK", "AAVE", "MKR", "COMP", "SNX"]
+  },
+  {
+    "name": "Polygon",
+    "chainId": 137,
+    "nativeCurrency": {
+      "name": "Matic",
+      "symbol": "MATIC",
+      "decimals": 18
+    },
+    "rpc": [
+      "https://polygon-rpc.com"
+    ],
+    "explorer": "https://polygonscan.com",
+    "supportedTokens": ["USDC", "USDT", "DAI", "WBTC", "UNI"]
+  },
+  {
+    "name": "Arbitrum One",
+    "chainId": 42161,
+    "nativeCurrency": {
+      "name": "Ether",
+      "symbol": "ETH",
+      "decimals": 18
+    },
+    "rpc": [
+      "https://arb1.arbitrum.io/rpc"
+    ],
+    "explorer": "https://arbiscan.io",
+    "supportedTokens": ["USDC", "USDT", "DAI", "WBTC"]
+  },
+  {
+    "name": "Optimism",
+    "chainId": 10,
+    "nativeCurrency": {
+      "name": "Ether",
+      "symbol": "ETH",
+      "decimals": 18
+    },
+    "rpc": [
+      "https://mainnet.optimism.io"
+    ],
+    "explorer": "https://optimistic.etherscan.io",
+    "supportedTokens": ["USDC", "USDT", "DAI", "WBTC"]
+  },
+  {
+    "name": "Avalanche C-Chain",
+    "chainId": 43114,
+    "nativeCurrency": {
+      "name": "Avalanche",
+      "symbol": "AVAX",
+      "decimals": 18
+    },
+    "rpc": [
+      "https://api.avax.network/ext/bc/C/rpc"
+    ],
+    "explorer": "https://snowtrace.io",
+    "supportedTokens": ["USDC", "USDT", "DAI", "WBTC"]
+  }
+]

@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Token Price Explorer
 
-## Getting Started
+A single-page web application built with **React** that allows users to explore token swap prices between different EVM-compatible chains. Users can select two tokens and view their price relationship based on a USD amount.
 
-First, run the development server:
+---
+
+## 🚀 Live Demo
+
+[🔗 Deployed on Vercel](https:)
+
+---
+
+## 📦 Tech Stack
+
+- **React** (Next.js App Router)
+- **TypeScript**
+- **TailwindCSS** (UI styling)
+- **Lucide React** (icons)
+- **@funkit/api-base** (for fetching ERC20 token and price info)
+- **Next Image** (optimized image handling)
+- **ESLint + Prettier** (code quality)
+
+---
+
+## 🧩 Features
+
+- ✅ Select source and destination chains
+- ✅ Choose supported tokens from each chain
+- ✅ Real-time token price fetching
+- ✅ Two-way conversion calculation
+- ✅ Searchable + collapsible token selector modal
+- ✅ Error handling + loading indicators
+- ✅ Responsive and accessible UI
+
+---
+
+## 🛠️ Setup Instructions
 
 ```bash
+# Clone the repository
+git clone https://github.com/your-username/token-price-explorer.git
+cd token-price-explorer
+
+# Install dependencies
+npm install
+
+# Run the development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📁 Folder Structure
+src/
+  components/        # UI components
+  data/              # Static token/chain list (evm_chains.json)
+  types/             # TypeScript types
+  pages/             # Next.js pages (main UI lives in app/page.tsx)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Assumptions Made
 
-## Learn More
+- We manually maintain a small list of chains and their supported tokens in evm_chains.json.
+- Token image URLs are based on symbol (via crypticon CDN), not contract address.
+- API response errors are parsed and shown to the user with a timeout.
+- The app is read-only, not performing real swaps — pricing is for reference only.
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📚 Libraries Used & Why
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Library            | Reason                                    |
+| ------------------ | ----------------------------------------- |
+| `@funkit/api-base` | Provided API to fetch token info & prices |
+| `Tailwind CSS`     | Rapid UI styling                          |
+| `Lucide React`     | Clean, consistent icon set                |
+| `Next.js`          | Optimized for React, great DX             |
+| `TypeScript`       | Type safety and better editor tooling     |
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📝 Submission Checklist
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Uses React + fetches from API
+- Token swap price calculator
+- Clean UI with loading and error states
+- Public source code repository
+- Vercel deployment
