@@ -39,11 +39,13 @@ export default function TokenSelectModal({
     } catch (err: unknown) {
       let message = 'Something went wrong. Please try again.';
       try {
+        // @ts-ignore
         const matched = err.message.match(/{.*}/);
         if (matched) {
           const parsed = JSON.parse(matched[0]);
           if (parsed?.errorMsg) message = parsed.errorMsg;
         }
+        // @ts-ignore
       } catch (_) {}
       setErrorMessage(message);
     } finally {
