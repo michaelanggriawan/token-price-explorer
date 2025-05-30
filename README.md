@@ -6,7 +6,7 @@ A single-page web application built with **React** that allows users to explore 
 
 ## 🚀 Live Demo
 
-[🔗 Deployed on Vercel](https:)
+[🔗 Deployed on Vercel](https://token-price-explorer-omega.vercel.app/)
 
 ---
 
@@ -38,7 +38,7 @@ A single-page web application built with **React** that allows users to explore 
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/token-price-explorer.git
+git clone https://github.com/michaelanggriawan/token-price-explorer.git
 cd token-price-explorer
 
 # Install dependencies
