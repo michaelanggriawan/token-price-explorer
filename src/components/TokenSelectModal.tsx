@@ -45,9 +45,7 @@ export default function TokenSelectModal({
           try {
             const parsed = JSON.parse(matched[0]);
             if (parsed?.errorMsg) message = parsed.errorMsg;
-          } catch (_) {
-            // JSON parsing failed, ignore and use default message
-          }
+          } catch {}
         }
       }
       setErrorMessage(message);
