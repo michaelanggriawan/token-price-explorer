@@ -37,16 +37,19 @@ export default function TokenSelectModal({
     try {
       await onSelect({ ...chain, selectedTokenSymbol: symbol });
     } catch (err: unknown) {
-      let message = 'Something went wrong. Please try again.';
-      try {
-        // @ts-ignore
-        const matched = err.message.match(/{.*}/);
+      let message = 'Something went wrong';
+
+      if (err instanceof Error) {
+        const matched = err.message.match(/({.*})/);
         if (matched) {
-          const parsed = JSON.parse(matched[0]);
-          if (parsed?.errorMsg) message = parsed.errorMsg;
+          try {
+            const parsed = JSON.parse(matched[0]);
+            if (parsed?.errorMsg) message = parsed.errorMsg;
+          } catch (_) {
+            // JSON parsing failed, ignore and use default message
+          }
         }
-        // @ts-ignore
-      } catch (_) {}
+      }
       setErrorMessage(message);
     } finally {
       setLoadingSymbol(null);
